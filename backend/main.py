@@ -96,6 +96,28 @@ def find_tf_root(base_dir: str) -> str:
 
     return best_dir
 
+# Checkov ID별 한국어 매핑 데이터
+CHECK_MAPPING = {
+    "CKV_AWS_16": {
+        "title": "RDS 가용 영역 설정 미흡",
+        "description": "RDS 인스턴스가 단일 가용 영역(AZ)에 배포되어 있어 장애 발생 시 서비스 중단 위험이 있습니다.",
+        "guideline": "resource \"aws_db_instance\" \"example\" {\n  multi_az = true\n}",
+        "isms_p": "2.10.2" # 시스템 가용성 관리
+    },
+    "CKV_AWS_157": {
+        "title": "RDS 퍼블릭 액세스 허용",
+        "description": "RDS 인스턴스가 외부에 노출되어 있습니다. 무단 접속 및 SQL 인젝션 공격의 원인이 됩니다.",
+        "guideline": "resource \"aws_db_instance\" \"example\" {\n  publicly_accessible = false\n}",
+        "isms_p": "2.6.1" # 네트워크 접근 제어
+    },
+    "CKV_AWS_19": {
+        "title": "S3 버킷 퍼블릭 접근 차단 미설정",
+        "description": "S3 버킷이 외부로 공개되어 민감 데이터가 유출될 수 있습니다.",
+        "guideline": "resource \"aws_s3_bucket_public_access_block\" \"example\" {\n  block_public_acls = true\n  block_public_policy = true\n}",
+        "isms_p": "2.10.1" # 권한 관리
+    }
+}
+
 
 app = FastAPI(
     title="Checkov Scanner API",
@@ -219,22 +241,36 @@ async def scan_file(
             for f in files if f.endswith(".tf")
         )
 
+        processed_failed = []
+        for check in failed_checks:
+            check_id = check.get("check_id")
+            mapping = CHECK_MAPPING.get(check_id, {})
+            
+            processed_failed.append({
+                "check_id": check_id,
+                "status": "FAILED",
+                "severity": check.get("severity", "MEDIUM"), # Checkov 기본 위험도
+                "check_name": mapping.get("title", check.get("check_name")), # 매핑 있으면 쓰고 없으면 영문명
+                "resource": check.get("resource"),
+                "file_path": check.get("file_path"),
+                "line_range": check.get("file_line_range"),
+                "description": mapping.get("description", "상세 보안 가이드가 준비 중입니다."),
+                "guideline": mapping.get("guideline", "# 공식 문서를 참고하여 수정하세요."),
+                "isms_p": mapping.get("isms_p", "보안 가이드 참조"),
+            })
+
+        # 최종 응답 데이터 구조 (프론트엔드 UI 맞춤형)
         return {
             "success": True,
             "filename": safe_filename,
             "summary": {
-                "failed":  len(failed_checks),
-                "passed":  len(passed_checks),
-                "skipped": len(skipped_checks),
+                "failed": len(failed_checks),
+                "passed": len(passed_checks),
+                "critical": sum(1 for c in failed_checks if c.get("severity") == "CRITICAL"),
+                "high": sum(1 for c in failed_checks if c.get("severity") == "HIGH"),
             },
-            "data": parsed,
-            # 개발 중 디버깅용 — 프로덕션 전 제거
-            "_debug": {
-                "scan_dir":  scan_target_dir,
-                "tf_count":  tf_count,
-                "returncode": result.returncode,
-                "stderr_snippet": result.stderr[:300] if result.stderr else "",
-            },
+            "results": processed_failed, # 프론트엔드 표에서 보여줄 진짜 리스트
+            "raw_data": parsed # 원본 데이터도 혹시 모르니 포함
         }
 
     finally:

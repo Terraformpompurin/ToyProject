@@ -12,3 +12,59 @@ dist/
 # IDE 관련
 .vscode/
 .idea/
+=======
+# ── macOS ─────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Python ────────────────────────────────────────────────
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# ── Node.js ───────────────────────────────────────────────
+node_modules/
+**/node_modules/
+dist/
+build/
+.cache/
+
+# ── Terraform ─────────────────────────────────────────────
+**/.terraform/*
+.terraform/
+.terraform.lock.hcl
+**/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfbackend
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+
+# ── 환경변수 / 시크릿 ─────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+
+# ── 업로드 임시 파일 ──────────────────────────────────────
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ── 기타 ──────────────────────────────────────────────────
+*.log
+*.tmp
+.idea/
+.vscode/
+twistcli
