@@ -176,6 +176,7 @@ async def scan_file(
             capture_output=True,
             text=True,
             env=env,
+            shell=True,
         )
 
         # returncode 0 = 위반 없음 / 1 = 위반 있음 / 그 외 = 실행 오류
