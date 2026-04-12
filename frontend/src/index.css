@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 코드 블록 공통 스타일 */
+.code-block {
+  @apply font-mono text-sm leading-relaxed whitespace-pre-wrap break-words;
+}
+
+/* 커스텀 스크롤바 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { @apply bg-gray-100; }
+::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded; }
