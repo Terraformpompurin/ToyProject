@@ -13,8 +13,8 @@ export default function App() {
   const [scanResult, setScanResult] = useState(null)   // raw API response
   const [selected,   setSelected]   = useState(null)   // 상세보기 위반 항목
 
-  const violations = scanResult ? extractFailedChecks(scanResult.data) : []
-  const passed     = scanResult ? extractPassedChecks(scanResult.data).length : 0
+  const violations = scanResult ? scanResult.results : []
+  const passed     = scanResult ? scanResult.summary.passed : 0 
 
   const handleScan = useCallback(async (file) => {
     setLoading(true)
