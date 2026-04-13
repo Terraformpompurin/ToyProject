@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # =====================================================
 # 백엔드 Deployment
 # =====================================================
@@ -5,10 +6,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: terraform-backend
+=======
+# =============================================
+# Backend Deployment
+# =============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terraform-scanner-backend
+  labels:
+    app: terraform-scanner-backend
+>>>>>>> a4b2f72 (k8s 포트포워딩 배포 지원)
 spec:
   replicas: 1
   selector:
     matchLabels:
+<<<<<<< HEAD
       app: terraform-backend
   template:
     metadata:
@@ -46,10 +59,60 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: terraform-frontend
+=======
+      app: terraform-scanner-backend
+  template:
+    metadata:
+      labels:
+        app: terraform-scanner-backend
+    spec:
+      containers:
+        - name: backend
+          image: eyen/terraform-scanner-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+---
+# =============================================
+# Backend Service (ClusterIP - 내부 통신용)
+# =============================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: terraform-scanner-backend-service
+spec:
+  selector:
+    app: terraform-scanner-backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
+
+---
+# =============================================
+# Frontend Deployment
+# =============================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terraform-scanner-frontend
+  labels:
+    app: terraform-scanner-frontend
+>>>>>>> a4b2f72 (k8s 포트포워딩 배포 지원)
 spec:
   replicas: 1
   selector:
     matchLabels:
+<<<<<<< HEAD
       app: terraform-frontend
   template:
     metadata:
@@ -80,3 +143,44 @@ spec:
       port: 80
       targetPort: 80
       nodePort: 30080
+=======
+      app: terraform-scanner-frontend
+  template:
+    metadata:
+      labels:
+        app: terraform-scanner-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: eyen/terraform-scanner-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+
+---
+# =============================================
+# Frontend Service (포트포워딩 접속)
+# =============================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: terraform-scanner-frontend-service
+spec:
+  selector:
+    app: terraform-scanner-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+  
+  
+  
+>>>>>>> a4b2f72 (k8s 포트포워딩 배포 지원)

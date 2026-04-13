@@ -82,7 +82,7 @@ def safe_extract_zip(zip_path: str, extract_dir: str) -> None:
 def find_tf_root(base_dir: str) -> str:
     """.tf 파일이 가장 많은 디렉터리를 찾아 반환합니다."""
     best_dir, best_count = base_dir, 0
-    for dirpath, _, filenames in os.walk(base_dir):
+    for dirpath, dirnames, filenames in os.walk(base_dir):
         count = sum(1 for f in filenames if f.endswith(".tf"))
         if count > best_count:
             best_count, best_dir = count, dirpath
@@ -136,7 +136,7 @@ async def scan_file(
                 "--framework", "terraform",
                 "-o", "json",
             ],
-            capture_output=True, text=True, env=env, shell=True
+            capture_output=True, text=True, env=env
         )
 
         # 4. 결과 파싱 및 전처리

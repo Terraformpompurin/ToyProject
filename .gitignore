@@ -1,18 +1,3 @@
-# Python 관련
-**/__pycache__/
-**/*.pyc
-venv/
-.env
-
-# Node.js 관련
-**/node_modules/
-dist/
-.DS_Store
-
-# IDE 관련
-.vscode/
-.idea/
-=======
 # ── macOS ─────────────────────────────────────────────────
 .DS_Store
 .AppleDouble
@@ -51,12 +36,18 @@ override.tf.json
 *_override.tf.json
 crash.log
 
+# ── Vagrant ────────────────────────────────────────────────
+.vagrant/
+
 # ── 환경변수 / 시크릿 ─────────────────────────────────────
 .env
 .env.*
 *.pem
 *.key
 credentials.json
+
+# Large archives
+terragoat.zip
 
 # ── 업로드 임시 파일 ──────────────────────────────────────
 backend/uploads/*

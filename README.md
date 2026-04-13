@@ -198,6 +198,19 @@ npm install
 
 백엔드와 프론트엔드를 **각각 별도의 터미널**에서 실행해야 합니다.
 
+---
+
+## Kubernetes 포트포워딩으로 접속 (NodePort 없이)
+
+클러스터에 배포한 뒤, 프론트 서비스(80)를 로컬로 포워딩해서 접속할 수 있습니다.
+
+```powershell
+kubectl apply -f deployment.yaml
+.\port-forward.ps1
+```
+
+출력되는 주소(예: `http://127.0.0.1:18080`)로 접속하세요.
+
 #### 데이터 변환
 
 **Windows:**

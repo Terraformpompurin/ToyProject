@@ -1,4 +1,13 @@
-const BASE_URL = 'http://localhost:8000'
+const API_BASE =
+  (import.meta.env?.VITE_API_URL && String(import.meta.env.VITE_API_URL).trim()) ||
+  '/scan'
+
+function buildScanUrl() {
+  // VITE_API_URL can be:
+  // - "/scan" (default): same-origin, nginx will proxy to backend in k8s
+  // - "http://host:8000": direct backend (local dev)
+  return API_BASE.endsWith('/scan') ? API_BASE : `${API_BASE.replace(/\/$/, '')}/scan`
+}
 
 /**
  * .tf 또는 .zip 파일을 업로드하고 Checkov 스캔 결과를 반환한다.
@@ -9,7 +18,7 @@ export async function scanFile(file) {
   const formData = new FormData()
   formData.append('file', file)
 
-  const res = await fetch(`${BASE_URL}/scan`, {
+  const res = await fetch(buildScanUrl(), {
     method: 'POST',
     body: formData,
   })
